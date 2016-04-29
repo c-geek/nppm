@@ -51,15 +51,6 @@ install_ucoin_from_git() {
     command git clone "$(ucoin_repo_url)" "$NPPM_DIR"
   fi
   cd "$NPPM_DIR"
-  command git checkout --quiet $(ucoin_latest_version)
-  if [ ! -z "$(cd "$NPPM_DIR" && git show-ref refs/heads/master)" ]; then
-    if git branch --quiet 2>/dev/null; then
-      cd "$NPPM_DIR" && command git branch --quiet -D master >/dev/null 2>&1
-    else
-      echo >&2 "Your version of git is out of date. Please update it!"
-      cd "$NPPM_DIR" && command git branch -D master >/dev/null 2>&1
-    fi
-  fi
 
   # Download Nodejs
   local NVER="5.8.0";
