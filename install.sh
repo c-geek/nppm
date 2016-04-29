@@ -6,8 +6,8 @@ ucoin_has() {
   type "$1" > /dev/null 2>&1
 }
 
-if [ -z "$DUNITER_DIR" ]; then
-  DUNITER_DIR="$HOME/.nppm"
+if [ -z "$NPPM_DIR" ]; then
+  NPPM_DIR="$HOME/.nppm"
 fi
 
 ucoin_latest_version() {
@@ -37,27 +37,27 @@ install_ucoin_from_git() {
 
   local PREVIOUS_PATH
   PREVIOUS_PATH=$PATH
-  if [ -d "$DUNITER_DIR/.git" ]; then
-    echo "=> ucoin is already installed in $DUNITER_DIR, trying to update using git"
+  if [ -d "$NPPM_DIR/.git" ]; then
+    echo "=> ucoin is already installed in $NPPM_DIR, trying to update using git"
     printf "\r=> "
-    cd "$DUNITER_DIR" && (command git fetch 2> /dev/null || {
-      echo >&2 "Failed to update ucoin, run 'git fetch' in $DUNITER_DIR yourself." && exit 1
+    cd "$NPPM_DIR" && (command git fetch 2> /dev/null || {
+      echo >&2 "Failed to update ucoin, run 'git fetch' in $NPPM_DIR yourself." && exit 1
     })
   else
-    # Cloning to $DUNITER_DIR
-    echo "=> Downloading ucoin from git to '$DUNITER_DIR'"
+    # Cloning to $NPPM_DIR
+    echo "=> Downloading ucoin from git to '$NPPM_DIR'"
     printf "\r=> "
-    mkdir -p "$DUNITER_DIR"
-    command git clone "$(ucoin_repo_url)" "$DUNITER_DIR"
+    mkdir -p "$NPPM_DIR"
+    command git clone "$(ucoin_repo_url)" "$NPPM_DIR"
   fi
-  cd "$DUNITER_DIR"
+  cd "$NPPM_DIR"
   command git checkout --quiet $(ucoin_latest_version)
-  if [ ! -z "$(cd "$DUNITER_DIR" && git show-ref refs/heads/master)" ]; then
+  if [ ! -z "$(cd "$NPPM_DIR" && git show-ref refs/heads/master)" ]; then
     if git branch --quiet 2>/dev/null; then
-      cd "$DUNITER_DIR" && command git branch --quiet -D master >/dev/null 2>&1
+      cd "$NPPM_DIR" && command git branch --quiet -D master >/dev/null 2>&1
     else
       echo >&2 "Your version of git is out of date. Please update it!"
-      cd "$DUNITER_DIR" && command git branch -D master >/dev/null 2>&1
+      cd "$NPPM_DIR" && command git branch -D master >/dev/null 2>&1
     fi
   fi
 
@@ -75,9 +75,9 @@ install_ucoin_from_git() {
   fi
   local NODEJS_FILENAME=node-v${NVER}-linux-${ARCH}
   local NODEJS_TARBALL=http://nodejs.org/dist/v${NVER}/${NODEJS_FILENAME}.tar.gz
-  local NODEJS_ARCHIVE=$DUNITER_DIR/node.tar.gz
-  local NODEJS_EXTRACTED=$DUNITER_DIR/$NODEJS_FILENAME
-  if [ ! -d "$DUNITER_DIR/node" ]; then
+  local NODEJS_ARCHIVE=$NPPM_DIR/node.tar.gz
+  local NODEJS_EXTRACTED=$NPPM_DIR/$NODEJS_FILENAME
+  if [ ! -d "$NPPM_DIR/node" ]; then
     echo "=> Downloading '$NODEJS_TARBALL' to '$NODEJS_ARCHIVE'"
     ucoin_download "$NODEJS_TARBALL" -o "$NODEJS_ARCHIVE" || {
       echo >&2 "Failed to download '$NODEJS_TARBALL'"
@@ -94,8 +94,8 @@ install_ucoin_from_git() {
   fi
 
   # Install uCoin dependencies (NPM modules)
-  NODE=$DUNITER_DIR/node/bin/node
-  NPM=$DUNITER_DIR/node/bin/npm
+  NODE=$NPPM_DIR/node/bin/node
+  NPM=$NPPM_DIR/node/bin/npm
   $NPM install
   return
 }
@@ -170,27 +170,27 @@ ucoin_do_install() {
 
   echo
 
-  local UCOIN_PROFILE
-  UCOIN_PROFILE=$(ucoin_detect_profile)
+#  local UCOIN_PROFILE
+#  UCOIN_PROFILE=$(ucoin_detect_profile)
 
-  SOURCE_STR="\nexport DUNITER_DIR=\"$DUNITER_DIR\"\n[ -s \"\$DUNITER_DIR/duniter.sh\" ] && . \"\$DUNITER_DIR/duniter.sh\"  # This loads duniter.sh"
-
-  if [ -z "$UCOIN_PROFILE" ] ; then
-    echo "=> Profile not found. Tried $UCOIN_PROFILE (as defined in \$PROFILE), ~/.bashrc, ~/.bash_profile, ~/.zshrc, and ~/.profile."
-    echo "=> Create one of them and run this script again"
-    echo "=> Create it (touch $UCOIN_PROFILE) and run this script again"
-    echo "   OR"
-    echo "=> Append the following lines to the correct file yourself:"
-    printf "$SOURCE_STR"
-    echo
-  else
-    if ! command grep -qc '/duniter.sh' "$UCOIN_PROFILE"; then
-      echo "=> Appending source string to $UCOIN_PROFILE"
-      printf "$SOURCE_STR\n" >> "$UCOIN_PROFILE"
-    else
-      echo "=> Source string already in $UCOIN_PROFILE"
-    fi
-  fi
+#  SOURCE_STR="\nexport NPPM_DIR=\"$NPPM_DIR\"\n[ -s \"\$NPPM_DIR/duniter.sh\" ] && . \"\$NPPM_DIR/duniter.sh\"  # This loads duniter.sh"
+#
+#  if [ -z "$UCOIN_PROFILE" ] ; then
+#    echo "=> Profile not found. Tried $UCOIN_PROFILE (as defined in \$PROFILE), ~/.bashrc, ~/.bash_profile, ~/.zshrc, and ~/.profile."
+#    echo "=> Create one of them and run this script again"
+#    echo "=> Create it (touch $UCOIN_PROFILE) and run this script again"
+#    echo "   OR"
+#    echo "=> Append the following lines to the correct file yourself:"
+#    printf "$SOURCE_STR"
+#    echo
+#  else
+#    if ! command grep -qc '/duniter.sh' "$UCOIN_PROFILE"; then
+#      echo "=> Appending source string to $UCOIN_PROFILE"
+#      printf "$SOURCE_STR\n" >> "$UCOIN_PROFILE"
+#    else
+#      echo "=> Source string already in $UCOIN_PROFILE"
+#    fi
+#  fi
 
   echo "=> ------------------------------------------------------"
   echo "=> !                                                     !"
